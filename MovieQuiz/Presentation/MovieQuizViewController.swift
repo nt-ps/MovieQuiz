@@ -134,12 +134,17 @@ final class MovieQuizViewController: UIViewController {
     private func showAnswerResult(isCorrect: Bool) {
         posterImage.layer.borderWidth = 8
         posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
         
         correctAnswers += isCorrect ? 1 : 0
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.posterImage.layer.borderWidth = 0
-            self.showNextQuestionOrResults()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.posterImage.layer.borderWidth = 0
+            self?.showNextQuestionOrResults()
+            
+            self?.yesButton.isEnabled = true
+            self?.noButton.isEnabled = true
         }
     }
 

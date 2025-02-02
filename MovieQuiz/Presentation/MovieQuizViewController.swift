@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
     
     // MARK: - IB Outlets
     
@@ -24,6 +24,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     
+    private var alertPresenter: AlertPresenter?
+    
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     
@@ -44,10 +46,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         noButton.titleLabel?.font = buttonFont
         yesButton.titleLabel?.font = buttonFont
         
-        // Инициализация фабрики вопросов.
         let questionFactory = QuestionFactory()
         questionFactory.delegate = self
         self.questionFactory = questionFactory
+        
+        let alertPresenter: AlertPresenter = AlertPresenter()
+        alertPresenter.delegate = self
+        self.alertPresenter = alertPresenter
         
         // Вывод первого вопроса.
         showCurrentQuestion()
@@ -66,6 +71,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: questionViewModel)
         }
+    }
+    
+    // MARK: - AlertPresenterDelegate
+    
+    func didReceiveAlert(alert: UIAlertController?) {
+        guard let alert = alert else {
+            return
+        }
+        
+        present(alert, animated: true, completion: nil)
     }
     
     // MARK: - IB Actions
@@ -106,19 +121,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
 
     private func show(quiz result: QuizResultsViewModel) {
-        let alert = UIAlertController(
+        let alertModel: AlertModel = AlertModel(
             title: result.title,
             message: result.text,
-            preferredStyle: .alert)
+            buttonText: result.buttonText,
+            completion: { [weak self] _ in
+                self?.currentQuestionIndex = 0
+                self?.correctAnswers = 0
+                self?.showCurrentQuestion()
+            })
         
-        let action = UIAlertAction(title: result.buttonText, style: .default) { [weak self] _ in
-            self?.currentQuestionIndex = 0
-            self?.correctAnswers = 0
-            self?.showCurrentQuestion()
-        }
-        
-        alert.addAction(action)
-        present(alert, animated: true, completion: nil)
+        alertPresenter?.show(alert: alertModel)
     }
 
     private func showAnswerResult(isCorrect: Bool) {

@@ -1,8 +1,9 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - IB Outlets
+    
     @IBOutlet private weak var questionTitleLabel: UILabel!
     @IBOutlet private weak var questionNumberLabel: UILabel!
     
@@ -14,18 +15,20 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var yesButton: UIButton!
     
     // MARK: - Private Properties
+    
     private let headerFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
     private let questionTextFont: UIFont? = UIFont(name: "YSDisplay-Bold", size: 23) ?? nil
     private let buttonFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
     
     private let questionsAmount: Int = 10
-    private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
+    private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     
     // MARK: - Overrides Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,11 +44,32 @@ final class MovieQuizViewController: UIViewController {
         noButton.titleLabel?.font = buttonFont
         yesButton.titleLabel?.font = buttonFont
         
+        // Инициализация фабрики вопросов.
+        let questionFactory = QuestionFactory()
+        questionFactory.delegate = self
+        self.questionFactory = questionFactory
+        
         // Вывод первого вопроса.
         showCurrentQuestion()
     }
     
+    // MARK: - QuestionFactoryDelegate
+
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let questionViewModel: QuizStepViewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: questionViewModel)
+        }
+    }
+    
     // MARK: - IB Actions
+    
     @IBAction private func noButtonClicked(_ sender: Any) {
         guard let currentQuestion = currentQuestion else {
             return
@@ -63,6 +87,7 @@ final class MovieQuizViewController: UIViewController {
     }
 
     // MARK: - Private Methods
+    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
             image: UIImage(imageLiteralResourceName: model.image),
@@ -71,11 +96,7 @@ final class MovieQuizViewController: UIViewController {
     }
 
     private func showCurrentQuestion() {
-        if let question: QuizQuestion = questionFactory.requestNextQuestion() {
-            currentQuestion = question
-            let questionViewModel: QuizStepViewModel = convert(model: question)
-            show(quiz: questionViewModel)
-        }
+        questionFactory?.requestNextQuestion()
     }
     
     private func show(quiz step: QuizStepViewModel) {

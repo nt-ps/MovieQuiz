@@ -1,13 +1,9 @@
-//
-//  StatisticService.swift
-//  MovieQuiz
-//
-//  Created by Антон on 03.02.2025.
-//
-
 import Foundation
 
 final class StatisticService: StatisticServiceProtocol {
+    
+    // MARK: - Public Properties
+    
     var gamesCount: Int {
         get { storage.integer(forKey: Keys.gamesCount.rawValue) }
         set { storage.set(newValue, forKey: Keys.gamesCount.rawValue) }
@@ -30,6 +26,8 @@ final class StatisticService: StatisticServiceProtocol {
     
     var totalAccuracy: Double { totalAnswers > 0 ? 100.0 * Double(correctAnswers) / Double(totalAnswers) : 0.0 }
     
+    // MARK: - Private Properties
+    
     private let storage: UserDefaults = .standard
     
     private var correctAnswers: Int {
@@ -42,6 +40,8 @@ final class StatisticService: StatisticServiceProtocol {
         set { storage.set(newValue, forKey: Keys.totalAnswers.rawValue) }
     }
     
+    // MARK: - Private structs
+    
     private enum Keys: String {
         case gamesCount
         case bestGameCorrect
@@ -50,6 +50,8 @@ final class StatisticService: StatisticServiceProtocol {
         case correctAnswers
         case totalAnswers
     }
+    
+    // MARK: - Public Methods
     
     func store(result: GameResult) {
         gamesCount += 1

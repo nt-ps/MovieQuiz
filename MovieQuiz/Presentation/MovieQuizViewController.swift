@@ -38,8 +38,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         posterImage.layer.masksToBounds = true
         
-        // Настройка шрифтов (сделано тут из-за того, что установленные
-        // шрифты не отображаются в списке шрифтов).
+        // Настройка шрифтов.
         questionTitleLabel.font = headerFont
         questionNumberLabel.font = headerFont
         
@@ -48,6 +47,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         noButton.titleLabel?.font = buttonFont
         yesButton.titleLabel?.font = buttonFont
         
+        // Инициализация свойств.
         let questionFactory = QuestionFactory()
         questionFactory.delegate = self
         self.questionFactory = questionFactory
@@ -58,43 +58,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         statisticService = StatisticService()
         
-        /*
-        let domain = Bundle.main.bundleIdentifier!
-        UserDefaults.standard.removePersistentDomain(forName: domain)
-        UserDefaults.standard.synchronize()
-        print(Array(UserDefaults.standard.dictionaryRepresentation().keys).count)
-        */
-        
         // Вывод первого вопроса.
         showCurrentQuestion()
-        
-        print(NSHomeDirectory())
-        UserDefaults.standard.set(true, forKey: "viewDidLoad")
-    }
-    
-    // MARK: - QuestionFactoryDelegate
-
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let questionViewModel: QuizStepViewModel = convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: questionViewModel)
-        }
-    }
-    
-    // MARK: - AlertPresenterDelegate
-    
-    func didReceiveAlert(alert: UIAlertController?) {
-        guard let alert = alert else {
-            return
-        }
-        
-        present(alert, animated: true, completion: nil)
     }
     
     // MARK: - IB Actions
@@ -114,7 +79,34 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         let isCorrect: Bool = currentQuestion.correctAnswer == true
         showAnswerResult(isCorrect: isCorrect)
     }
-
+    
+    // MARK: - Public Methods
+    
+    // MARK: QuestionFactoryDelegate
+    
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question = question else {
+            return
+        }
+        
+        currentQuestion = question
+        let questionViewModel: QuizStepViewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: questionViewModel)
+        }
+    }
+    
+    // MARK: AlertPresenterDelegate
+    
+    func didReceiveAlert(alert: UIAlertController?) {
+        guard let alert = alert else {
+            return
+        }
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
     // MARK: - Private Methods
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
@@ -123,7 +115,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
-
+    
     private func showCurrentQuestion() {
         questionFactory?.requestNextQuestion()
     }
@@ -133,7 +125,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         questionTextLabel.text = step.question
         questionNumberLabel.text = step.questionNumber
     }
-
+    
     private func show(quiz result: QuizResultsViewModel) {
         let alertModel: AlertModel = AlertModel(
             title: result.title,
@@ -147,7 +139,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         
         alertPresenter?.show(alert: alertModel)
     }
-
+    
     private func showAnswerResult(isCorrect: Bool) {
         posterImage.layer.borderWidth = 8
         posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -155,7 +147,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         noButton.isEnabled = false
         
         correctAnswers += isCorrect ? 1 : 0
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             self?.posterImage.layer.borderWidth = 0
             self?.yesButton.isEnabled = true
@@ -164,7 +156,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             self?.showNextQuestionOrResults()
         }
     }
-
+    
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
             let result: GameResult = GameResult(

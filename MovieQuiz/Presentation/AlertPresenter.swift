@@ -1,10 +1,3 @@
-//
-//  AlertPresenter.swift
-//  MovieQuiz
-//
-//  Created by Антон on 02.02.2025.
-//
-
 import UIKit
 
 class AlertPresenter {
@@ -19,7 +12,6 @@ class AlertPresenter {
         let action = UIAlertAction(title: model.buttonText, style: .default) { _ in
             model.completion()
         }
-        
         alert.addAction(action)
         
         delegate?.didReceiveAlert(alert: alert)

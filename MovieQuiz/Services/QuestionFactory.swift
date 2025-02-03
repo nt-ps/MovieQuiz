@@ -1,10 +1,3 @@
-//
-//  QuestionFactory.swift
-//  MovieQuiz
-//
-//  Created by Антон on 02.02.2025.
-//
-
 class QuestionFactory : QuestionFactoryProtocol {
     
     weak var delegate: QuestionFactoryDelegate?
@@ -57,7 +50,7 @@ class QuestionFactory : QuestionFactoryProtocol {
             delegate?.didReceiveNextQuestion(question: nil)
             return
         }
-
+        
         let question = questions[safe: index]
         delegate?.didReceiveNextQuestion(question: question)
     }

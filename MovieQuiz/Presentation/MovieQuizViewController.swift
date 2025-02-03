@@ -26,6 +26,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private var alertPresenter: AlertPresenter?
     
+    private var statisticService: StatisticServiceProtocol?
+    
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     
@@ -54,8 +56,20 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         alertPresenter.delegate = self
         self.alertPresenter = alertPresenter
         
+        statisticService = StatisticService()
+        
+        /*
+        let domain = Bundle.main.bundleIdentifier!
+        UserDefaults.standard.removePersistentDomain(forName: domain)
+        UserDefaults.standard.synchronize()
+        print(Array(UserDefaults.standard.dictionaryRepresentation().keys).count)
+        */
+        
         // Вывод первого вопроса.
         showCurrentQuestion()
+        
+        print(NSHomeDirectory())
+        UserDefaults.standard.set(true, forKey: "viewDidLoad")
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -153,9 +167,22 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 
     private func showNextQuestionOrResults() {
         if currentQuestionIndex == questionsAmount - 1 {
+            let result: GameResult = GameResult(
+                correct: correctAnswers,
+                total: questionsAmount,
+                date: Date())
+            statisticService?.store(result: result)
+            
+            var quizResultText: String = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+            if let statisticService = statisticService {
+                quizResultText += "\nКоличество сыгранных квизов: \(statisticService.gamesCount)"
+                quizResultText += "\nРекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))"
+                quizResultText += "\nСредняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
+            }
+            
             let quizResult: QuizResultsViewModel = QuizResultsViewModel(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswers)/\(questionsAmount)",
+                text: quizResultText,
                 buttonText: "Сыграть ещё раз")
             show(quiz: quizResult)
         } else {

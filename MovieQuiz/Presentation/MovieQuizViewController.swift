@@ -125,7 +125,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             title: result.title,
             message: result.text,
             buttonText: result.buttonText,
-            completion: { [weak self] _ in
+            completion: { [weak self] in
                 self?.currentQuestionIndex = 0
                 self?.correctAnswers = 0
                 self?.showCurrentQuestion()

@@ -1,6 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController {
     
     // MARK: - IB Outlets
     
@@ -28,8 +28,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     
     private var statisticService: StatisticServiceProtocol?
     
-    private var currentQuestionIndex = 0
-    private var correctAnswers = 0
+    private var currentQuestionIndex: Int = 0
+    private var correctAnswers: Int = 0
     
     // MARK: - Overrides Methods
     
@@ -65,46 +65,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - IB Actions
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         let isCorrect: Bool = currentQuestion.correctAnswer == false
         showAnswerResult(isCorrect: isCorrect)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         let isCorrect: Bool = currentQuestion.correctAnswer == true
         showAnswerResult(isCorrect: isCorrect)
-    }
-    
-    // MARK: - Public Methods
-    
-    // MARK: QuestionFactoryDelegate
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let questionViewModel: QuizStepViewModel = convert(model: question)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: questionViewModel)
-        }
-    }
-    
-    // MARK: AlertPresenterDelegate
-    
-    func didReceiveAlert(alert: UIAlertController?) {
-        guard let alert = alert else {
-            return
-        }
-        
-        present(alert, animated: true, completion: nil)
     }
     
     // MARK: - Private Methods
@@ -143,15 +112,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private func showAnswerResult(isCorrect: Bool) {
         posterImage.layer.borderWidth = 8
         posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        yesButton.isEnabled = false
-        noButton.isEnabled = false
+        changeStateButton(isEnabled: false)
         
         correctAnswers += isCorrect ? 1 : 0
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             self?.posterImage.layer.borderWidth = 0
-            self?.yesButton.isEnabled = true
-            self?.noButton.isEnabled = true
+            self?.changeStateButton(isEnabled: true)
             
             self?.showNextQuestionOrResults()
         }
@@ -181,5 +148,31 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             currentQuestionIndex += 1
             showCurrentQuestion()
         }
+    }
+    
+    private func changeStateButton(isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
+    }
+}
+
+extension MovieQuizViewController: QuestionFactoryDelegate {
+    func didReceiveNextQuestion(question: QuizQuestion?) {
+        guard let question else { return }
+        
+        currentQuestion = question
+        let questionViewModel: QuizStepViewModel = convert(model: question)
+        
+        DispatchQueue.main.async { [weak self] in
+            self?.show(quiz: questionViewModel)
+        }
+    }
+}
+
+extension MovieQuizViewController: AlertPresenterDelegate {
+    func didReceiveAlert(alert: UIAlertController?) {
+        guard let alert else { return }
+        
+        present(alert, animated: true, completion: nil)
     }
 }

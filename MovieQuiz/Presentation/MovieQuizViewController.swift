@@ -14,6 +14,8 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
+    
     // MARK: - Private Properties
     
     private let headerFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
@@ -99,12 +101,13 @@ final class MovieQuizViewController: UIViewController {
         let alertModel: AlertModel = AlertModel(
             title: result.title,
             message: result.text,
-            buttonText: result.buttonText,
-            completion: { [weak self] in
-                self?.currentQuestionIndex = 0
-                self?.correctAnswers = 0
-                self?.showCurrentQuestion()
-            })
+            buttonText: result.buttonText) { [weak self] in
+                guard let self = self else { return }
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                self.showCurrentQuestion()
+            }
         
         alertPresenter?.show(alert: alertModel)
     }
@@ -153,6 +156,34 @@ final class MovieQuizViewController: UIViewController {
     private func changeStateButton(isEnabled: Bool) {
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
+    }
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+    
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        // создайте и покажите алерт
+        let alertModel: AlertModel = AlertModel(
+            title: "Ошибка",
+            message: message,
+            buttonText: "Попробовать еще раз") { [weak self] in
+                guard let self = self else { return }
+                
+                self.currentQuestionIndex = 0
+                self.correctAnswers = 0
+                self.showCurrentQuestion()
+            }
+        
+        alertPresenter?.show(alert: alertModel)
     }
 }
 

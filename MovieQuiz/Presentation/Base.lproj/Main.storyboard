@@ -101,17 +101,23 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="9H8-ec-Tk5">
+                                <rect key="frame" x="186.66666666666666" y="416" width="20" height="20"/>
+                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Gb7-s8-5JN" secondAttribute="bottom" id="AzZ-SQ-4Vq"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Gb7-s8-5JN" secondAttribute="trailing" constant="20" id="Gi9-Za-SRQ"/>
+                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Sbe-tC-VR0"/>
                             <constraint firstItem="Gb7-s8-5JN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="cdr-Yp-3gT"/>
                             <constraint firstItem="Gb7-s8-5JN" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="nXO-E4-1rp"/>
+                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qZ2-nH-ezl"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="9H8-ec-Tk5" id="get-4O-lp4"/>
                         <outlet property="noButton" destination="Be7-WD-gWT" id="cFT-qh-Buu"/>
                         <outlet property="posterImage" destination="UW8-Mt-Lni" id="KKt-x7-SVg"/>
                         <outlet property="questionNumberLabel" destination="ct7-Uj-jVE" id="Rzi-fD-YWS"/>

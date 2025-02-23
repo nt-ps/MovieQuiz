@@ -50,9 +50,7 @@ final class MovieQuizViewController: UIViewController {
         yesButton.titleLabel?.font = buttonFont
         
         // Инициализация свойств.
-        let questionFactory = QuestionFactory()
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
+        self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         
         let alertPresenter: AlertPresenter = AlertPresenter()
         alertPresenter.delegate = self
@@ -60,8 +58,9 @@ final class MovieQuizViewController: UIViewController {
         
         statisticService = StatisticService()
         
-        // Вывод первого вопроса.
-        showCurrentQuestion()
+        // Загрузка данных.
+        showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
     // MARK: - IB Actions
@@ -82,7 +81,7 @@ final class MovieQuizViewController: UIViewController {
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
-            image: UIImage(imageLiteralResourceName: model.image),
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
@@ -159,21 +158,20 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showLoadingIndicator() {
+        // TODO: По-хорошему, activityIndicator нужно выровнять по области изображения, и отображать тогда, когда данные или конкретное изображение подгружается. И ранее загруженные изображения можно попробовать кэшировать (сделать приватные поля для юрла и изображения, и одно публичное поле, где по гету будет проверка есть изображение в кэше или нет. Если есть - вернуть его, если нет - попробовать подгрузить.
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
+        activityIndicator.isHidden = true
+        activityIndicator.stopAnimating()
     }
     
     private func showNetworkError(message: String) {
-        hideLoadingIndicator()
-        
-        // создайте и покажите алерт
+        // TODO: Алерт появляется только один раз - например, когда при запуске приложения нет интернета. После нажатия "Попробовать еще раз" при выключенном интернете алерт не появляется заново.
         let alertModel: AlertModel = AlertModel(
-            title: "Ошибка",
+            title: "Что-то пошло не так(",
             message: message,
             buttonText: "Попробовать еще раз") { [weak self] in
                 guard let self = self else { return }
@@ -197,6 +195,16 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: questionViewModel)
         }
+    }
+    
+    func didLoadDataFromServer() {
+        hideLoadingIndicator()
+        showCurrentQuestion()
+    }
+
+    func didFailToLoadData(with error: Error) {
+        hideLoadingIndicator()
+        showNetworkError(message: error.localizedDescription)
     }
 }
 

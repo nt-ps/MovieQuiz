@@ -21,13 +21,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
             
             guard let movie = self.movies[safe: index] else { return }
             
-            var imageData = Data()
-            
-            do {
-                imageData = try Data(contentsOf: movie.resizedImageURL)
-            } catch {
-                print("Failed to load image")
-            }
+            let imageData = movie.imageData
             
             // TODO: Тут по уроку, но лучше делать перевод во float сразу при чтении данных. И можно попробовать делать так с картинкой (String -> Data).
             let rating = Float(movie.rating) ?? 0

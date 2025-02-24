@@ -59,8 +59,7 @@ final class MovieQuizViewController: UIViewController {
         statisticService = StatisticService()
         
         // Загрузка данных.
-        showLoadingIndicator()
-        questionFactory?.loadData()
+        loadData()
     }
     
     // MARK: - IB Actions
@@ -169,19 +168,19 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNetworkError(message: String) {
-        // TODO: Алерт появляется только один раз - например, когда при запуске приложения нет интернета. После нажатия "Попробовать еще раз" при выключенном интернете алерт не появляется заново.
         let alertModel: AlertModel = AlertModel(
             title: "Что-то пошло не так(",
             message: message,
             buttonText: "Попробовать еще раз") { [weak self] in
-                guard let self = self else { return }
-                
-                self.currentQuestionIndex = 0
-                self.correctAnswers = 0
-                self.showCurrentQuestion()
+                self?.loadData()
             }
         
         alertPresenter?.show(alert: alertModel)
+    }
+    
+    private func loadData() {
+        showLoadingIndicator()
+        questionFactory?.loadData()
     }
 }
 

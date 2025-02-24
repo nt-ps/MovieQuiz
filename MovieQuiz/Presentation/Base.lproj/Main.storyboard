@@ -37,22 +37,34 @@
                                             </label>
                                         </subviews>
                                     </stackView>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UW8-Mt-Lni">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pWv-5C-wdo">
                                         <rect key="frame" x="0.0" y="44" width="353" height="529.66666666666663"/>
-                                        <color key="backgroundColor" name="YP White"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UW8-Mt-Lni">
+                                                <rect key="frame" x="0.0" y="0.0" width="353" height="529.66666666666663"/>
+                                                <color key="backgroundColor" name="YP White"/>
+                                                <userDefinedRuntimeAttributes>
+                                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                        <integer key="value" value="20"/>
+                                                    </userDefinedRuntimeAttribute>
+                                                </userDefinedRuntimeAttributes>
+                                            </imageView>
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="9H8-ec-Tk5">
+                                                <rect key="frame" x="166.66666666666666" y="254.66666666666669" width="20" height="20"/>
+                                            </activityIndicatorView>
+                                        </subviews>
                                         <constraints>
-                                            <constraint firstAttribute="width" secondItem="UW8-Mt-Lni" secondAttribute="height" multiplier="2:3" id="7pg-CJ-crt"/>
+                                            <constraint firstItem="UW8-Mt-Lni" firstAttribute="leading" secondItem="pWv-5C-wdo" secondAttribute="leading" id="1kM-DA-aN2"/>
+                                            <constraint firstAttribute="width" secondItem="pWv-5C-wdo" secondAttribute="height" multiplier="2:3" id="9sR-RJ-fRq"/>
+                                            <constraint firstAttribute="trailing" secondItem="UW8-Mt-Lni" secondAttribute="trailing" id="NfJ-N6-ew8"/>
+                                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerX" secondItem="pWv-5C-wdo" secondAttribute="centerX" id="QZ8-xr-ncv"/>
+                                            <constraint firstAttribute="bottom" secondItem="UW8-Mt-Lni" secondAttribute="bottom" id="VUN-ce-JKr"/>
+                                            <constraint firstItem="UW8-Mt-Lni" firstAttribute="top" secondItem="pWv-5C-wdo" secondAttribute="top" id="jyn-uJ-zav"/>
+                                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerY" secondItem="pWv-5C-wdo" secondAttribute="centerY" id="kNp-3H-u6F"/>
                                         </constraints>
-                                        <userDefinedRuntimeAttributes>
-                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                <integer key="value" value="20"/>
-                                            </userDefinedRuntimeAttribute>
-                                        </userDefinedRuntimeAttributes>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pbA-I6-l95">
+                                    </view>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pbA-I6-l95">
                                         <rect key="frame" x="0.0" y="593.66666666666663" width="353" height="75.333333333333371"/>
-                                        <string key="text">Рейтинг этого фильма
-меньше чем 5?</string>
                                         <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="23"/>
                                         <color key="textColor" name="YP White"/>
                                         <nil key="highlightedColor"/>
@@ -101,19 +113,14 @@
                                     </stackView>
                                 </subviews>
                             </stackView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="9H8-ec-Tk5">
-                                <rect key="frame" x="186.66666666666666" y="416" width="20" height="20"/>
-                            </activityIndicatorView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="YP Black"/>
                         <constraints>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="Gb7-s8-5JN" secondAttribute="bottom" id="AzZ-SQ-4Vq"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Gb7-s8-5JN" secondAttribute="trailing" constant="20" id="Gi9-Za-SRQ"/>
-                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Sbe-tC-VR0"/>
                             <constraint firstItem="Gb7-s8-5JN" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="cdr-Yp-3gT"/>
                             <constraint firstItem="Gb7-s8-5JN" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="10" id="nXO-E4-1rp"/>
-                            <constraint firstItem="9H8-ec-Tk5" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qZ2-nH-ezl"/>
                         </constraints>
                     </view>
                     <connections>

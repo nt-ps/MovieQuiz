@@ -19,11 +19,9 @@ final class QuestionFactory : QuestionFactoryProtocol {
             
             let index = getIndex()
             guard let movie = self.movies[safe: index] else { return }
-            
+
             let imageData = movie.imageData
-            
-            // TODO: Тут по уроку, но лучше делать перевод во float сразу при чтении данных. И можно попробовать делать так с картинкой (String -> Data).
-            let rating = Float(movie.rating) ?? 0
+            let rating = movie.rating
             
             // TODO: Сделать рандом "больше/меньше чем 2...9".
             let text = "Рейтинг этого фильма больше чем 7?"

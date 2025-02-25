@@ -1,12 +1,16 @@
 import Foundation
 
-class MovieDetails: Codable {
+final class MovieDetails: Codable {
+    
+    private enum ParseError: Error {
+        case ratingFailure
+    }
     
     private var cachedImageData: Data?
-    private let imageURL: URL
+    let imageURL: URL
     
     let title: String
-    let rating: String
+    let rating: Float
     
     var imageData: Data {
         if let image: Data = cachedImageData {
@@ -20,6 +24,20 @@ class MovieDetails: Codable {
             
             return cachedImageData ?? Data()
         }
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        title = try container.decode(String.self, forKey: .title)
+        
+        let rating = try container.decode(String.self, forKey: .rating)
+        guard let ratingValue = Float(rating) else {
+            throw ParseError.ratingFailure
+        }
+        self.rating = ratingValue
+        
+        imageURL = try container.decode(URL.self, forKey: .imageURL)
     }
     
     private var resizedImageURL: URL {

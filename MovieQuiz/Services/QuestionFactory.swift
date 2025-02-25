@@ -30,7 +30,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
                                          correctAnswer: correctAnswer)
             
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.didReceiveNextQuestion(question: question)
             }
         }

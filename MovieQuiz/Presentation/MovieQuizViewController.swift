@@ -118,10 +118,11 @@ final class MovieQuizViewController: UIViewController {
         correctAnswers += isCorrect ? 1 : 0
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            self?.posterImage.layer.borderWidth = 0
-            self?.changeStateButton(isEnabled: true)
+            guard let self else { return }
             
-            self?.showNextQuestionOrResults()
+            self.posterImage.layer.borderWidth = 0
+            self.changeStateButton(isEnabled: true)
+            self.showNextQuestionOrResults()
         }
     }
     
@@ -146,6 +147,7 @@ final class MovieQuizViewController: UIViewController {
                 buttonText: "Сыграть ещё раз")
             show(quiz: quizResult)
         } else {
+            showLoadingIndicator()
             currentQuestionIndex += 1
             showCurrentQuestion()
         }
@@ -157,12 +159,13 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showLoadingIndicator() {
-        // TODO: По-хорошему, activityIndicator нужно выровнять по области изображения, и отображать тогда, когда данные или конкретное изображение подгружается. И ранее загруженные изображения можно попробовать кэшировать (сделать приватные поля для юрла и изображения, и одно публичное поле, где по гету будет проверка есть изображение в кэше или нет. Если есть - вернуть его, если нет - попробовать подгрузить.
+        changeStateButton(isEnabled: false)
         activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {
+        changeStateButton(isEnabled: true)
         activityIndicator.isHidden = true
         activityIndicator.stopAnimating()
     }
@@ -193,6 +196,7 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: questionViewModel)
+            self?.hideLoadingIndicator()
         }
     }
     

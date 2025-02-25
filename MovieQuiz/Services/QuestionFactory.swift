@@ -23,9 +23,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
             let imageData = movie.imageData
             let rating = movie.rating
             
-            // TODO: Сделать рандом "больше/меньше чем 2...9".
-            let text = "Рейтинг этого фильма больше чем 7?"
-            let correctAnswer = rating > 7
+            let (text, correctAnswer) = generateQuestion(for: rating)
             
             let question = QuizQuestion(image: imageData,
                                          text: text,
@@ -60,5 +58,21 @@ final class QuestionFactory : QuestionFactoryProtocol {
         }
         
         return indeces.removeFirst()
+    }
+    
+    private func generateQuestion(for rating: Float) -> (String, Bool) {
+        let value: Int = (5...9).randomElement() ?? 0
+        var text = "Рейтинг этого фильма "
+        var answer: Bool
+        
+        if Bool.random() {
+            text += "больше чем \(value)?"
+            answer = rating > Float(value)
+        } else {
+            text += "меньше чем \(value)?"
+            answer = rating < Float(value)
+        }
+        
+        return (text, answer)
     }
 }

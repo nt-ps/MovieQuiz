@@ -7,8 +7,8 @@ final class MovieDetails: Codable {
     }
     
     private var cachedImageData: Data?
-    let imageURL: URL
     
+    let imageURL: URL
     let title: String
     let rating: Float
     

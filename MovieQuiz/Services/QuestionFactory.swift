@@ -5,8 +5,8 @@ final class QuestionFactory : QuestionFactoryProtocol {
     weak var delegate: QuestionFactoryDelegate?
     
     private let moviesLoader: MoviesLoadingProtocol
-    
     private var movies: [MovieDetails] = []
+    private var indeces: [Int] = []
     
     init(moviesLoader: MoviesLoadingProtocol, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
@@ -16,9 +16,8 @@ final class QuestionFactory : QuestionFactoryProtocol {
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
-            // TODO: Будет лучше, если фильмы не будут повторяться в рамках одной игры. Можно либо удалять показанные фильмы из массива (но хранить их в другом, чтобы потом вернуть обратно), либо сразу генерировать массив из 10 различных индексов для одной игры (это будет проще).
-            let index = (0..<self.movies.count).randomElement() ?? 0
             
+            let index = getIndex()
             guard let movie = self.movies[safe: index] else { return }
             
             let imageData = movie.imageData
@@ -48,11 +47,20 @@ final class QuestionFactory : QuestionFactoryProtocol {
                 switch result {
                 case .success(let data):
                     self.movies = data.items
+                    self.indeces = (1..<self.movies.count).shuffled()
                     self.delegate?.didLoadDataFromServer()
                 case .failure(let error):
                     self.delegate?.didFailToLoadData(with: error)
                 }
             }
         }
+    }
+    
+    private func getIndex() -> Int {
+        if indeces.isEmpty {
+            indeces = (1..<movies.count).shuffled()
+        }
+        
+        return indeces.removeFirst()
     }
 }

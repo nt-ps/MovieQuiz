@@ -3,24 +3,22 @@ import Foundation
 class MovieDetails: Codable {
     
     private var cachedImageData: Data?
+    private let imageURL: URL
     
     let title: String
     let rating: String
-    let imageURL: URL
     
     var imageData: Data {
-        get {
-            if let image: Data = cachedImageData {
-                return image;
-            } else {
-                do {
-                    cachedImageData = try Data(contentsOf: resizedImageURL)
-                } catch {
-                    print("Failed to load image")
-                }
-                
-                return cachedImageData ?? Data()
+        if let image: Data = cachedImageData {
+            return image;
+        } else {
+            do {
+                cachedImageData = try Data(contentsOf: resizedImageURL)
+            } catch {
+                print("Failed to load image")
             }
+            
+            return cachedImageData ?? Data()
         }
     }
     

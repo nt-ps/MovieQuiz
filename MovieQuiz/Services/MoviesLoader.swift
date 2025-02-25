@@ -2,6 +2,10 @@ import Foundation
 
 struct MoviesLoader: MoviesLoadingProtocol {
     
+    private enum LoaderError: Error {
+        case emptyArray
+    }
+    
     // MARK: - NetworkClient
     private let networkClient = NetworkClient()
         
@@ -20,7 +24,11 @@ struct MoviesLoader: MoviesLoadingProtocol {
             case .success(let data):
                 do {
                     let top250Movies = try JSONDecoder().decode(Top250Movies.self, from: data)
-                    handler(.success(top250Movies))
+                    if top250Movies.items.isEmpty {
+                        throw LoaderError.emptyArray
+                    } else {
+                        handler(.success(top250Movies))
+                    }
                 } catch {
                     handler(.failure(error))
                 }

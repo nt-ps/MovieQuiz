@@ -8,13 +8,13 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var questionNumberLabel: UILabel!
     
     @IBOutlet private weak var posterImage: UIImageView!
+    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet private weak var questionTextLabel: UILabel!
     
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
-    @IBOutlet private var activityIndicator: UIActivityIndicatorView!
     
     // MARK: - Private Properties
     
@@ -38,11 +38,11 @@ final class MovieQuizViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        posterImage.layer.masksToBounds = true
-        
-        // Настройка шрифтов.
+        // Настройка отображения.
         questionTitleLabel.font = headerFont
         questionNumberLabel.font = headerFont
+        
+        posterImage.layer.masksToBounds = true
         
         questionTextLabel.font = questionTextFont
         
@@ -50,12 +50,8 @@ final class MovieQuizViewController: UIViewController {
         yesButton.titleLabel?.font = buttonFont
         
         // Инициализация свойств.
-        self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        
-        let alertPresenter: AlertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        self.alertPresenter = alertPresenter
-        
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticService()
         
         // Загрузка данных.
@@ -100,7 +96,7 @@ final class MovieQuizViewController: UIViewController {
             title: result.title,
             message: result.text,
             buttonText: result.buttonText) { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
@@ -135,7 +131,7 @@ final class MovieQuizViewController: UIViewController {
             statisticService?.store(result: result)
             
             var quizResultText: String = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
-            if let statisticService = statisticService {
+            if let statisticService {
                 quizResultText += "\nКоличество сыгранных квизов: \(statisticService.gamesCount)"
                 quizResultText += "\nРекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))"
                 quizResultText += "\nСредняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%"
@@ -195,8 +191,10 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         let questionViewModel: QuizStepViewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: questionViewModel)
-            self?.hideLoadingIndicator()
+            guard let self else { return }
+            
+            self.show(quiz: questionViewModel)
+            self.hideLoadingIndicator()
         }
     }
     
@@ -214,7 +212,7 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
 extension MovieQuizViewController: AlertPresenterDelegate {
     func didReceiveAlert(alert: UIAlertController?) {
         guard let alert else { return }
-        
+
         present(alert, animated: true, completion: nil)
     }
 }

@@ -25,13 +25,13 @@ final class QuestionFactory : QuestionFactoryProtocol {
             
             let (text, correctAnswer) = generateQuestion(for: rating)
             
-            let question = QuizQuestion(image: imageData,
-                                         text: text,
-                                         correctAnswer: correctAnswer)
+            let question = QuizQuestion(
+                image: imageData,
+                text: text,
+                correctAnswer: correctAnswer)
             
             DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                self.delegate?.didReceiveNextQuestion(question: question)
+                self?.delegate?.didReceiveNextQuestion(question: question)
             }
         }
     }
@@ -39,7 +39,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
     func loadData() {
         moviesLoader.loadMovies { [weak self] result in
             DispatchQueue.main.async {
-                guard let self = self else { return }
+                guard let self else { return }
                 switch result {
                 case .success(let data):
                     self.movies = data.items

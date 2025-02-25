@@ -7,9 +7,11 @@ struct MoviesLoader: MoviesLoadingProtocol {
     }
     
     // MARK: - NetworkClient
+    
     private let networkClient = NetworkClient()
         
     // MARK: - URL
+    
     private var top250MoviesUrl: URL {
         guard let url = URL(string: "https://tv-api.com/en/API/Top250Movies/k_zcuw1ytf") else {
             preconditionFailure("Unable to construct top250MoviesUrl")

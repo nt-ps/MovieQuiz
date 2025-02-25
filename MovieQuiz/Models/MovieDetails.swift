@@ -2,11 +2,7 @@ import Foundation
 
 final class MovieDetails: Codable {
     
-    private enum ParseError: Error {
-        case ratingFailure
-    }
-    
-    private var cachedImageData: Data?
+    // MARK: - Public Properties
     
     let imageURL: URL
     let title: String
@@ -26,6 +22,27 @@ final class MovieDetails: Codable {
         }
     }
     
+    // MARK: - Private Properties
+    
+    private enum ParseError: Error {
+        case ratingFailure
+    }
+    
+    private var cachedImageData: Data?
+    
+    private var resizedImageURL: URL {
+        let urlString = imageURL.absoluteString
+        let imageUrlString = urlString.components(separatedBy: "._")[0] + "._V0_UX600_.jpg"
+        
+        guard let newURL = URL(string: imageUrlString) else {
+            return imageURL
+        }
+        
+        return newURL
+    }
+    
+    // MARK: - Initializers
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -40,16 +57,7 @@ final class MovieDetails: Codable {
         imageURL = try container.decode(URL.self, forKey: .imageURL)
     }
     
-    private var resizedImageURL: URL {
-        let urlString = imageURL.absoluteString
-        let imageUrlString = urlString.components(separatedBy: "._")[0] + "._V0_UX600_.jpg"
-        
-        guard let newURL = URL(string: imageUrlString) else {
-            return imageURL
-        }
-        
-        return newURL
-    }
+    // MARK: - Private Methods
     
     private enum CodingKeys: String, CodingKey {
         case title = "fullTitle"

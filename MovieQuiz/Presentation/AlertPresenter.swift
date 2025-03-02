@@ -3,6 +3,10 @@ import UIKit
 final class AlertPresenter {
     weak var delegate: AlertPresenterDelegate?
     
+    init(delegate: AlertPresenterDelegate?) {
+        self.delegate = delegate
+    }
+    
     func show(alert model: AlertModel) {
         let alert = UIAlertController(
             title: model.title,

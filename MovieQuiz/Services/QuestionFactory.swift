@@ -2,36 +2,54 @@ import Foundation
 
 final class QuestionFactory : QuestionFactoryProtocol {
     
+    // MARK: - Internal Properties
+    
     weak var delegate: QuestionFactoryDelegate?
+    
+    // MARK: - Private Properties
     
     private let moviesLoader: MoviesLoadingProtocol
     private var movies: [MovieDetails] = []
     private var indeces: [Int] = []
+    private var wasLastQuestionShown: Bool = false
+    
+    // MARK: - Initializers
     
     init(moviesLoader: MoviesLoadingProtocol, delegate: QuestionFactoryDelegate?) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
     
+    // MARK: - Internal Methods
+    
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             let index = getIndex()
             guard let movie = self.movies[safe: index] else { return }
 
-            let imageData = movie.imageData
-            let rating = movie.rating
-            
-            let (text, correctAnswer) = generateQuestion(for: rating)
-            
-            let question = QuizQuestion(
-                image: imageData,
-                text: text,
-                correctAnswer: correctAnswer)
-            
-            DispatchQueue.main.async { [weak self] in
-                self?.delegate?.didReceiveNextQuestion(question: question)
+            do {
+                let imageData = try movie.getImageData()
+                let rating = movie.rating
+                let (text, correctAnswer) = generateQuestion(for: rating)
+                
+                let question = QuizQuestion(
+                    image: imageData,
+                    text: text,
+                    correctAnswer: correctAnswer)
+                
+                wasLastQuestionShown = true
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.delegate?.didReceiveNextQuestion(question: question)
+                }
+            } catch {
+                wasLastQuestionShown = false
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.delegate?.didFailToLoadQuestion(with: error)
+                }
             }
         }
     }
@@ -43,7 +61,6 @@ final class QuestionFactory : QuestionFactoryProtocol {
                 switch result {
                 case .success(let data):
                     self.movies = data.items
-                    self.indeces = (1..<self.movies.count).shuffled()
                     self.delegate?.didLoadDataFromServer()
                 case .failure(let error):
                     self.delegate?.didFailToLoadData(with: error)
@@ -52,12 +69,16 @@ final class QuestionFactory : QuestionFactoryProtocol {
         }
     }
     
+    // MARK: - Private Methods
+    
     private func getIndex() -> Int {
+        if wasLastQuestionShown {
+            indeces.removeFirst()
+        }
         if indeces.isEmpty {
             indeces = (1..<movies.count).shuffled()
         }
-        
-        return indeces.removeFirst()
+        return indeces.first ?? 0
     }
     
     private func generateQuestion(for rating: Float) -> (String, Bool) {

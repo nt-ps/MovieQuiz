@@ -156,23 +156,20 @@ final class MovieQuizViewController: UIViewController {
     
     private func showLoadingIndicator() {
         changeStateButton(isEnabled: false)
-        activityIndicator.isHidden = false
         activityIndicator.startAnimating()
     }
     
     private func hideLoadingIndicator() {
         changeStateButton(isEnabled: true)
-        activityIndicator.isHidden = true
         activityIndicator.stopAnimating()
     }
     
-    private func showNetworkError(message: String) {
+    private func showNetworkError(message: String, completion : @escaping (() -> Void)) {
         let alertModel: AlertModel = AlertModel(
             title: "Что-то пошло не так(",
             message: message,
-            buttonText: "Попробовать еще раз") { [weak self] in
-                self?.loadData()
-            }
+            buttonText: "Попробовать еще раз",
+            completion: completion)
         
         alertPresenter?.show(alert: alertModel)
     }
@@ -198,6 +195,13 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         }
     }
     
+    func didFailToLoadQuestion(with error: Error) {
+        hideLoadingIndicator()
+        showNetworkError(message: error.localizedDescription) { [weak self] in
+            self?.showCurrentQuestion()
+        }
+    }
+    
     func didLoadDataFromServer() {
         hideLoadingIndicator()
         showCurrentQuestion()
@@ -205,7 +209,9 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
 
     func didFailToLoadData(with error: Error) {
         hideLoadingIndicator()
-        showNetworkError(message: error.localizedDescription)
+        showNetworkError(message: error.localizedDescription) { [weak self] in
+            self?.loadData()
+        }
     }
 }
 

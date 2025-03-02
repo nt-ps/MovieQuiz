@@ -2,7 +2,7 @@ import Foundation
 
 final class StatisticService: StatisticServiceProtocol {
     
-    // MARK: - Public Properties
+    // MARK: - Internal Properties
     
     var gamesCount: Int {
         get { storage.integer(forKey: Keys.gamesCount.rawValue) }
@@ -40,7 +40,7 @@ final class StatisticService: StatisticServiceProtocol {
         set { storage.set(newValue, forKey: Keys.totalAnswers.rawValue) }
     }
     
-    // MARK: - Private structs
+    // MARK: - Private Enumerations
     
     private enum Keys: String {
         case gamesCount
@@ -51,7 +51,7 @@ final class StatisticService: StatisticServiceProtocol {
         case totalAnswers
     }
     
-    // MARK: - Public Methods
+    // MARK: - Internal Methods
     
     func store(result: GameResult) {
         gamesCount += 1

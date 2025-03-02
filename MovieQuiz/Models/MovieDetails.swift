@@ -2,25 +2,11 @@ import Foundation
 
 final class MovieDetails: Codable {
     
-    // MARK: - Public Properties
+    // MARK: - Internal Properties
     
     let imageURL: URL
     let title: String
     let rating: Float
-    
-    var imageData: Data {
-        if let image: Data = cachedImageData {
-            return image;
-        } else {
-            do {
-                cachedImageData = try Data(contentsOf: resizedImageURL)
-            } catch {
-                print("Failed to load image")
-            }
-            
-            return cachedImageData ?? Data()
-        }
-    }
     
     // MARK: - Private Properties
     
@@ -41,6 +27,14 @@ final class MovieDetails: Codable {
         return newURL
     }
     
+    // MARK: - Private Enumerations
+    
+    private enum CodingKeys: String, CodingKey {
+        case title = "fullTitle"
+        case rating = "imDbRating"
+        case imageURL = "image"
+    }
+    
     // MARK: - Initializers
     
     init(from decoder: Decoder) throws {
@@ -57,11 +51,18 @@ final class MovieDetails: Codable {
         imageURL = try container.decode(URL.self, forKey: .imageURL)
     }
     
-    // MARK: - Private Methods
+    // MARK: - Internal Methods
     
-    private enum CodingKeys: String, CodingKey {
-        case title = "fullTitle"
-        case rating = "imDbRating"
-        case imageURL = "image"
+    func getImageData() throws -> Data {
+        if let image: Data = cachedImageData {
+            return image
+        } else {
+            do {
+                cachedImageData = try Data(contentsOf: resizedImageURL)
+                return cachedImageData ?? Data()
+            } catch {
+                throw error
+            }
+        }
     }
 }

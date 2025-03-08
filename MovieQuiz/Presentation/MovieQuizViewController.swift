@@ -93,6 +93,7 @@ final class MovieQuizViewController: UIViewController {
     
     private func show(quiz result: QuizResultsViewModel) {
         let alertModel: AlertModel = AlertModel(
+            id: "GameResults",
             title: result.title,
             message: result.text,
             buttonText: result.buttonText) { [weak self] in
@@ -166,6 +167,7 @@ final class MovieQuizViewController: UIViewController {
     
     private func showNetworkError(message: String, completion : @escaping (() -> Void)) {
         let alertModel: AlertModel = AlertModel(
+            id: "GameError",
             title: "Что-то пошло не так(",
             message: message,
             buttonText: "Попробовать еще раз",

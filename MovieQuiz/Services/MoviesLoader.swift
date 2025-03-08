@@ -4,7 +4,7 @@ struct MoviesLoader: MoviesLoadingProtocol {
     
     // MARK: - NetworkClient
     
-    private let networkClient = NetworkClient()
+    private let networkClient: NetworkRoutingProtocol
         
     // MARK: - URL
     
@@ -13,6 +13,12 @@ struct MoviesLoader: MoviesLoadingProtocol {
             preconditionFailure("Unable to construct top250MoviesUrl")
         }
         return url
+    }
+    
+    // MARK: - Initializers
+    
+    init(networkClient: NetworkRoutingProtocol = NetworkClient()) {
+        self.networkClient = networkClient
     }
     
     // MARK: - Internal methods

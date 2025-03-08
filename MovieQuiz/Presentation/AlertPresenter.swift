@@ -17,6 +17,7 @@ final class AlertPresenter {
             model.completion()
         }
         alert.addAction(action)
+        alert.view.accessibilityIdentifier = model.id
         
         delegate?.didReceiveAlert(alert: alert)
     }

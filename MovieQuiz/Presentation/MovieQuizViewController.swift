@@ -22,7 +22,6 @@ final class MovieQuizViewController: UIViewController {
     private let questionTextFont: UIFont? = UIFont(name: "YSDisplay-Bold", size: 23) ?? nil
     private let buttonFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
     
-    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     
@@ -30,8 +29,9 @@ final class MovieQuizViewController: UIViewController {
     
     private var statisticService: StatisticServiceProtocol?
     
-    private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
+    
+    private let presenter = MovieQuizPresenter()
     
     // MARK: - Overrides Methods
     
@@ -74,13 +74,6 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Private Methods
     
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-    }
-    
     private func showCurrentQuestion() {
         questionFactory?.requestNextQuestion()
     }
@@ -99,7 +92,7 @@ final class MovieQuizViewController: UIViewController {
             buttonText: result.buttonText) { [weak self] in
                 guard let self else { return }
                 
-                self.currentQuestionIndex = 0
+                presenter.resetQuestionIndex()
                 self.correctAnswers = 0
                 self.showCurrentQuestion()
             }
@@ -124,14 +117,14 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showNextQuestionOrResults() {
-        if currentQuestionIndex == questionsAmount - 1 {
+        if presenter.isLastQuestion {
             let result: GameResult = GameResult(
                 correct: correctAnswers,
-                total: questionsAmount,
+                total: presenter.questionsAmount,
                 date: Date())
             statisticService?.store(result: result)
             
-            var quizResultText: String = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+            var quizResultText: String = "Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)"
             if let statisticService {
                 quizResultText += "\nКоличество сыгранных квизов: \(statisticService.gamesCount)"
                 quizResultText += "\nРекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))"
@@ -145,7 +138,7 @@ final class MovieQuizViewController: UIViewController {
             show(quiz: quizResult)
         } else {
             showLoadingIndicator()
-            currentQuestionIndex += 1
+            presenter.switchToNextQuestion()
             showCurrentQuestion()
         }
     }
@@ -187,7 +180,7 @@ extension MovieQuizViewController: QuestionFactoryDelegate {
         guard let question else { return }
         
         currentQuestion = question
-        let questionViewModel: QuizStepViewModel = convert(model: question)
+        let questionViewModel: QuizStepViewModel = presenter.convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }

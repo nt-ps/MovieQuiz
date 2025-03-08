@@ -8,15 +8,12 @@ final class MovieQuizPresenter {
     private var questionFactory: QuestionFactoryProtocol?
     private var statisticService: StatisticServiceProtocol?
     
+    private let questionsAmount: Int = 10
+    private var currentQuestion: QuizQuestion?
     private var currentQuestionIndex: Int = 0
+    private var correctAnswers: Int = 0
     
-    // MARK: - Internal Properties
-
-    let questionsAmount: Int = 10
-    var currentQuestion: QuizQuestion?
-    var correctAnswers: Int = 0
-    
-    var isLastQuestion: Bool { currentQuestionIndex == questionsAmount - 1 }
+    private var isLastQuestion: Bool { currentQuestionIndex == questionsAmount - 1 }
     
     // MARK: - Initializers
     
@@ -36,37 +33,22 @@ final class MovieQuizPresenter {
         questionFactory?.loadData()
     }
     
-    // MARK: - Internal Methods
-    
-    func convert(model: QuizQuestion) -> QuizStepViewModel {
+    private func convert(model: QuizQuestion) -> QuizStepViewModel {
         QuizStepViewModel(
             image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
     
-    func restartGame() {
-        correctAnswers = 0
-        currentQuestionIndex = 0
-        questionFactory?.requestNextQuestion()
-    }
-    
-    func switchToNextQuestion() {
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
     
-    func clickedButton(withAnswer answer: Bool) {
-        guard let currentQuestion else { return }
-        
-        let isCorrect: Bool = currentQuestion.correctAnswer == answer
-        viewController?.showAnswerResult(isCorrect: isCorrect)
-    }
-    
-    func didAnswer(isCorrect: Bool) {
+    private func didAnswer(isCorrect: Bool) {
         correctAnswers += isCorrect ? 1 : 0;
     }
     
-    func showNextQuestionOrResults() {
+    private func proceedToNextQuestionOrResults() {
         if isLastQuestion {
             let result: GameResult = GameResult(
                 correct: correctAnswers,
@@ -92,10 +74,39 @@ final class MovieQuizPresenter {
             questionFactory?.requestNextQuestion()
         }
     }
+    
+    private func proceedWithAnswer(isCorrect: Bool) {
+        viewController?.highlightPosterBorder(isCorrectAnswer: isCorrect)
+        viewController?.changeStateButton(isEnabled: false)
+        
+        didAnswer(isCorrect: isCorrect)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self else { return }
+            
+            self.viewController?.removePosterBorder()
+            self.viewController?.changeStateButton(isEnabled: true)
+            self.proceedToNextQuestionOrResults()
+        }
+    }
+    
+    // MARK: - Internal Methods
+    
+    func restartGame() {
+        correctAnswers = 0
+        currentQuestionIndex = 0
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func clickedButton(withAnswer answer: Bool) {
+        guard let currentQuestion else { return }
+        
+        let isCorrect: Bool = currentQuestion.correctAnswer == answer
+        proceedWithAnswer(isCorrect: isCorrect)
+    }
 }
 
 extension MovieQuizPresenter: QuestionFactoryDelegate {
-    
     func didLoadDataFromServer() {
         viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()

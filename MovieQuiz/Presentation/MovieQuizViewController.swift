@@ -15,7 +15,6 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
-    
     // MARK: - Private Properties
     
     private let headerFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
@@ -44,7 +43,6 @@ final class MovieQuizViewController: UIViewController {
         
         // Инициализация свойств.
         alertPresenter = AlertPresenter(delegate: self)
-        
         presenter = MovieQuizPresenter(viewController: self)
     }
     
@@ -58,29 +56,20 @@ final class MovieQuizViewController: UIViewController {
         presenter?.clickedButton(withAnswer: true)
     }
     
-    // MARK: - Private Methods
+    // MARK: - Internal Methods
     
-    private func changeStateButton(isEnabled: Bool) {
+    func changeStateButton(isEnabled: Bool) {
         noButton.isEnabled = isEnabled
         yesButton.isEnabled = isEnabled
     }
     
-    // MARK: - Internal Methods
-    
-    func showAnswerResult(isCorrect: Bool) {
+    func highlightPosterBorder(isCorrectAnswer: Bool) {
         posterImage.layer.borderWidth = 8
-        posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        changeStateButton(isEnabled: false)
-        
-        presenter?.didAnswer(isCorrect: isCorrect)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self else { return }
-            
-            self.posterImage.layer.borderWidth = 0
-            self.changeStateButton(isEnabled: true)
-            self.presenter?.showNextQuestionOrResults()
-        }
+        posterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func removePosterBorder() {
+        posterImage.layer.borderWidth = 0
     }
     
     func show(quiz result: QuizResultsViewModel) {

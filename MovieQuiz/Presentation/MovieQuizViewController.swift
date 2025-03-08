@@ -54,6 +54,8 @@ final class MovieQuizViewController: UIViewController {
         alertPresenter = AlertPresenter(delegate: self)
         statisticService = StatisticService()
         
+        presenter.viewController = self
+        
         // Загрузка данных.
         loadData()
     }
@@ -61,15 +63,13 @@ final class MovieQuizViewController: UIViewController {
     // MARK: - IB Actions
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion else { return }
-        let isCorrect: Bool = currentQuestion.correctAnswer == false
-        showAnswerResult(isCorrect: isCorrect)
+        presenter.currentQuestion = currentQuestion
+        presenter.clickedButton(withAnswer: false)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion else { return }
-        let isCorrect: Bool = currentQuestion.correctAnswer == true
-        showAnswerResult(isCorrect: isCorrect)
+        presenter.currentQuestion = currentQuestion
+        presenter.clickedButton(withAnswer: true)
     }
     
     // MARK: - Private Methods
@@ -98,22 +98,6 @@ final class MovieQuizViewController: UIViewController {
             }
         
         alertPresenter?.show(alert: alertModel)
-    }
-    
-    private func showAnswerResult(isCorrect: Bool) {
-        posterImage.layer.borderWidth = 8
-        posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-        changeStateButton(isEnabled: false)
-        
-        correctAnswers += isCorrect ? 1 : 0
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self else { return }
-            
-            self.posterImage.layer.borderWidth = 0
-            self.changeStateButton(isEnabled: true)
-            self.showNextQuestionOrResults()
-        }
     }
     
     private func showNextQuestionOrResults() {
@@ -172,6 +156,24 @@ final class MovieQuizViewController: UIViewController {
     private func loadData() {
         showLoadingIndicator()
         questionFactory?.loadData()
+    }
+    
+    // MARK: - Internal Methods
+    
+    func showAnswerResult(isCorrect: Bool) {
+        posterImage.layer.borderWidth = 8
+        posterImage.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        changeStateButton(isEnabled: false)
+        
+        correctAnswers += isCorrect ? 1 : 0
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self else { return }
+            
+            self.posterImage.layer.borderWidth = 0
+            self.changeStateButton(isEnabled: true)
+            self.showNextQuestionOrResults()
+        }
     }
 }
 

@@ -7,7 +7,10 @@ final class MovieQuizPresenter {
     
     // MARK: - Internal Properties
     
+    weak var viewController: MovieQuizViewController?
+    
     let questionsAmount: Int = 10
+    var currentQuestion: QuizQuestion?
     
     var isLastQuestion: Bool { currentQuestionIndex == questionsAmount - 1 }
     
@@ -26,5 +29,12 @@ final class MovieQuizPresenter {
     
     func switchToNextQuestion() {
         currentQuestionIndex += 1
+    }
+    
+    func clickedButton(withAnswer answer: Bool) {
+        guard let currentQuestion else { return }
+        
+        let isCorrect: Bool = currentQuestion.correctAnswer == answer
+        viewController?.showAnswerResult(isCorrect: isCorrect)
     }
 }

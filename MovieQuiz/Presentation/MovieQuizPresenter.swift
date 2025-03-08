@@ -3,7 +3,7 @@ final class MovieQuizPresenter {
     
     // MARK: - Private Properties
     
-    private weak var viewController: MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     
     private var questionFactory: QuestionFactoryProtocol?
     private var statisticService: StatisticServiceProtocol?
@@ -17,7 +17,7 @@ final class MovieQuizPresenter {
     
     // MARK: - Initializers
     
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -31,13 +31,6 @@ final class MovieQuizPresenter {
     private func loadData() {
         viewController?.showLoadingIndicator()
         questionFactory?.loadData()
-    }
-    
-    private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        QuizStepViewModel(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
     }
     
     private func switchToNextQuestion() {
@@ -91,6 +84,13 @@ final class MovieQuizPresenter {
     }
     
     // MARK: - Internal Methods
+    
+    func convert(model: QuizQuestion) -> QuizStepViewModel {
+        QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
+            question: model.text,
+            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
+    }
     
     func restartGame() {
         correctAnswers = 0

@@ -1,6 +1,6 @@
 protocol MovieQuizViewControllerProtocol: AnyObject {
     
-    // MARK: - Main View
+    // MARK: - Main view
     func show(quiz step: QuizStepViewModel)
     func show(quiz result: QuizResultsViewModel)
     func show(error model: ErrorViewModel)
@@ -12,7 +12,7 @@ protocol MovieQuizViewControllerProtocol: AnyObject {
     func showPosterBorder(isCorrectAnswer: Bool)
     func hidePosterBorder()
     
-    // MARK: - Loading Indicator
+    // MARK: - Loading indicator
     func showLoadingIndicator()
     func hideLoadingIndicator()
     

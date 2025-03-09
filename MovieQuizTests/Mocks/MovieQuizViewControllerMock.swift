@@ -3,7 +3,7 @@ import XCTest
 
 final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
     
-    // MARK: - Main View
+    // MARK: - Main view
     
     func show(quiz step: QuizStepViewModel) {
         
@@ -33,7 +33,7 @@ final class MovieQuizViewControllerMock: MovieQuizViewControllerProtocol {
         
     }
     
-    // MARK: - Loading Indicator
+    // MARK: - Loading indicator
     
     func showLoadingIndicator() {
         

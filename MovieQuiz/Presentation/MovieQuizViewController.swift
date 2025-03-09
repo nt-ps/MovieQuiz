@@ -58,7 +58,7 @@ final class MovieQuizViewController: UIViewController {
 
 extension MovieQuizViewController: MovieQuizViewControllerProtocol {
     
-    // MARK: - Main View
+    // MARK: - Main view
     
     func show(quiz step: QuizStepViewModel) {
         posterImage.image = step.image
@@ -109,7 +109,7 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
         posterImage.layer.borderWidth = 0
     }
     
-    // MARK: - Loading Indicator
+    // MARK: - Loading indicator
     
     func showLoadingIndicator() {
         changeButtonState(isEnabled: false)

@@ -1,4 +1,5 @@
 import UIKit
+
 final class MovieQuizPresenter {
     
     // MARK: - Private Properties
@@ -38,7 +39,7 @@ final class MovieQuizPresenter {
     }
     
     private func didAnswer(isCorrect: Bool) {
-        correctAnswers += isCorrect ? 1 : 0;
+        correctAnswers += isCorrect ? 1 : 0
     }
     
     private func proceedToNextQuestionOrResults() {
@@ -50,6 +51,7 @@ final class MovieQuizPresenter {
             statisticService?.store(result: result)
             
             var quizResultText: String = "Ваш результат: \(correctAnswers)/\(questionsAmount)"
+            
             if let statisticService {
                 quizResultText += "\nКоличество сыгранных квизов: \(statisticService.gamesCount)"
                 quizResultText += "\nРекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))"
@@ -60,6 +62,7 @@ final class MovieQuizPresenter {
                 title: "Этот раунд окончен!",
                 text: quizResultText,
                 buttonText: "Сыграть ещё раз")
+            
             viewController?.show(quiz: quizResult)
         } else {
             viewController?.showLoadingIndicator()
@@ -107,6 +110,9 @@ final class MovieQuizPresenter {
 }
 
 extension MovieQuizPresenter: QuestionFactoryDelegate {
+    
+    // MARK: - Loading data
+    
     func didLoadDataFromServer() {
         viewController?.hideLoadingIndicator()
         questionFactory?.requestNextQuestion()
@@ -124,6 +130,8 @@ extension MovieQuizPresenter: QuestionFactoryDelegate {
         viewController?.show(error: errorViewModel)
     }
     
+    // MARK: - Loading question
+    
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question else { return }
         
@@ -131,10 +139,10 @@ extension MovieQuizPresenter: QuestionFactoryDelegate {
         let questionViewModel: QuizStepViewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+            guard let viewController = self?.viewController else { return }
             
-            self.viewController?.show(quiz: questionViewModel)
-            self.viewController?.hideLoadingIndicator()
+            viewController.show(quiz: questionViewModel)
+            viewController.hideLoadingIndicator()
         }
     }
     

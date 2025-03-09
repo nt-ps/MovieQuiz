@@ -1,6 +1,6 @@
 protocol QuestionFactoryDelegate: AnyObject {
     
-    // MARK: - Laoding data
+    // MARK: - Loading data
     
     func didLoadDataFromServer()
     func didFailToLoadData(with error: Error)

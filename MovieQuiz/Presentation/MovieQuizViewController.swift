@@ -68,7 +68,7 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
     
     func show(quiz result: QuizResultsViewModel) {
         let alertModel: AlertModel = AlertModel(
-            id: "GameResults",
+            accessibilityIdentifier: "GameResults",
             title: result.title,
             message: result.text,
             buttonText: result.buttonText) { [weak self] in
@@ -82,7 +82,7 @@ extension MovieQuizViewController: MovieQuizViewControllerProtocol {
     
     func show(error model: ErrorViewModel) {
         let alertModel: AlertModel = AlertModel(
-            id: "GameError",
+            accessibilityIdentifier: "GameError",
             title: "Что-то пошло не так(",
             message: model.message,
             buttonText: model.buttonText,

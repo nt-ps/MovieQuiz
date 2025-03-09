@@ -1,5 +1,5 @@
 struct AlertModel {
-    let id: String
+    let accessibilityIdentifier: String
     let title: String
     let message: String
     let buttonText: String

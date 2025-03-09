@@ -69,16 +69,16 @@ final class MovieQuizPresenter {
     }
     
     private func proceedWithAnswer(isCorrect: Bool) {
-        viewController?.highlightPosterBorder(isCorrectAnswer: isCorrect)
-        viewController?.changeStateButton(isEnabled: false)
+        viewController?.showPosterBorder(isCorrectAnswer: isCorrect)
+        viewController?.changeButtonState(isEnabled: false)
         
         didAnswer(isCorrect: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self else { return }
             
-            self.viewController?.removePosterBorder()
-            self.viewController?.changeStateButton(isEnabled: true)
+            self.viewController?.hidePosterBorder()
+            self.viewController?.changeButtonState(isEnabled: true)
             self.proceedToNextQuestionOrResults()
         }
     }
@@ -114,9 +114,14 @@ extension MovieQuizPresenter: QuestionFactoryDelegate {
     
     func didFailToLoadData(with error: Error) {
         viewController?.hideLoadingIndicator()
-        viewController?.showNetworkError(message: error.localizedDescription) { [weak self] in
-            self?.loadData()
-        }
+        
+        let errorViewModel = ErrorViewModel(
+            message: error.localizedDescription,
+            buttonText: "Попробовать еще раз") { [weak self] in
+                self?.loadData()
+            }
+        
+        viewController?.show(error: errorViewModel)
     }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
@@ -135,8 +140,13 @@ extension MovieQuizPresenter: QuestionFactoryDelegate {
     
     func didFailToLoadQuestion(with error: Error) {
         viewController?.hideLoadingIndicator()
-        viewController?.showNetworkError(message: error.localizedDescription) { [weak self] in
-            self?.questionFactory?.requestNextQuestion()
-        }
+        
+        let errorViewModel = ErrorViewModel(
+            message: error.localizedDescription,
+            buttonText: "Попробовать еще раз") { [weak self] in
+                self?.questionFactory?.requestNextQuestion()
+            }
+        
+        viewController?.show(error: errorViewModel)
     }
 }

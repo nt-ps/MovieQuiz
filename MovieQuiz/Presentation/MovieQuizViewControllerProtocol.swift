@@ -1,14 +1,19 @@
 protocol MovieQuizViewControllerProtocol: AnyObject {
-    func changeStateButton(isEnabled: Bool)
     
-    func highlightPosterBorder(isCorrectAnswer: Bool)
-    func removePosterBorder()
-    
+    // MARK: - Main View
     func show(quiz step: QuizStepViewModel)
     func show(quiz result: QuizResultsViewModel)
+    func show(error model: ErrorViewModel)
     
-    func showNetworkError(message: String, completion : @escaping (() -> Void))
+    // MARK: - Buttons
+    func changeButtonState(isEnabled: Bool)
     
+    // MARK: - Poster
+    func showPosterBorder(isCorrectAnswer: Bool)
+    func hidePosterBorder()
+    
+    // MARK: - Loading Indicator
     func showLoadingIndicator()
     func hideLoadingIndicator()
+    
 }

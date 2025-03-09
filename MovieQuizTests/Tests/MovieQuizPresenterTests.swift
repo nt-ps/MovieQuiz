@@ -6,12 +6,13 @@ final class MovieQuizPresenterTests: XCTestCase {
         let viewControllerMock = MovieQuizViewControllerMock()
         let sut = MovieQuizPresenter(viewController: viewControllerMock)
         
-        let emptyData = Data()
-        let question = QuizQuestion(image: emptyData, text: "Question Text", correctAnswer: true)
+        let emptyImageData = Data()
+        let questionText = "Question Text";
+        let question = QuizQuestion(image: emptyImageData, text: questionText, correctAnswer: true)
         let viewModel = sut.convert(model: question)
         
         XCTAssertNotNil(viewModel.image)
-        XCTAssertEqual(viewModel.question, "Question Text")
+        XCTAssertEqual(viewModel.question, questionText)
         XCTAssertEqual(viewModel.questionNumber, "1/10")
     }
 } 

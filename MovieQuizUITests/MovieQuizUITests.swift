@@ -19,10 +19,6 @@ final class MovieQuizUITests: XCTestCase {
         app.terminate()
         app = nil
     }
-
-    func testScreenCast() throws {
-        app.buttons["Нет"].tap()
-    }
     
     func testYesButton() {
         sleep(3)

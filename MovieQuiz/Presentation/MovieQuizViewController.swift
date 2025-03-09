@@ -1,7 +1,6 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController,
-                                     MovieQuizViewControllerProtocol {    
+final class MovieQuizViewController: UIViewController {
     
     // MARK: - IB Outlets
     
@@ -22,9 +21,8 @@ final class MovieQuizViewController: UIViewController,
     private let questionTextFont: UIFont? = UIFont(name: "YSDisplay-Bold", size: 23) ?? nil
     private let buttonFont: UIFont? = UIFont(name: "YSDisplay-Medium", size: 20) ?? nil
     
-    private var alertPresenter: AlertPresenter?
-    
     private var presenter: MovieQuizPresenter?
+    private var alertPresenter: AlertPresenter?
     
     // MARK: - Overrides Methods
     
@@ -43,8 +41,8 @@ final class MovieQuizViewController: UIViewController,
         yesButton.titleLabel?.font = buttonFont
         
         // Инициализация свойств.
-        alertPresenter = AlertPresenter(delegate: self)
         presenter = MovieQuizPresenter(viewController: self)
+        alertPresenter = AlertPresenter(delegate: self)
     }
     
     // MARK: - IB Actions
@@ -56,21 +54,16 @@ final class MovieQuizViewController: UIViewController,
     @IBAction private func yesButtonClicked(_ sender: Any) {
         presenter?.clickedButton(withAnswer: true)
     }
+}
+
+extension MovieQuizViewController: MovieQuizViewControllerProtocol {
     
-    // MARK: - Internal Methods
+    // MARK: - Main View
     
-    func changeStateButton(isEnabled: Bool) {
-        noButton.isEnabled = isEnabled
-        yesButton.isEnabled = isEnabled
-    }
-    
-    func highlightPosterBorder(isCorrectAnswer: Bool) {
-        posterImage.layer.borderWidth = 8
-        posterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
-    }
-    
-    func removePosterBorder() {
-        posterImage.layer.borderWidth = 0
+    func show(quiz step: QuizStepViewModel) {
+        posterImage.image = step.image
+        questionTextLabel.text = step.question
+        questionNumberLabel.text = step.questionNumber
     }
     
     func show(quiz result: QuizResultsViewModel) {
@@ -87,30 +80,44 @@ final class MovieQuizViewController: UIViewController,
         alertPresenter?.show(alert: alertModel)
     }
     
-    func show(quiz step: QuizStepViewModel) {
-        posterImage.image = step.image
-        questionTextLabel.text = step.question
-        questionNumberLabel.text = step.questionNumber
-    }
-    
-    func showNetworkError(message: String, completion : @escaping (() -> Void)) {
+    func show(error model: ErrorViewModel) {
         let alertModel: AlertModel = AlertModel(
             id: "GameError",
             title: "Что-то пошло не так(",
-            message: message,
-            buttonText: "Попробовать еще раз",
-            completion: completion)
+            message: model.message,
+            buttonText: model.buttonText,
+            completion: model.completion)
         
         alertPresenter?.show(alert: alertModel)
     }
     
+    // MARK: - Buttons
+    
+    func changeButtonState(isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
+    }
+    
+    // MARK: - Poster
+    
+    func showPosterBorder(isCorrectAnswer: Bool) {
+        posterImage.layer.borderWidth = 8
+        posterImage.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func hidePosterBorder() {
+        posterImage.layer.borderWidth = 0
+    }
+    
+    // MARK: - Loading Indicator
+    
     func showLoadingIndicator() {
-        changeStateButton(isEnabled: false)
+        changeButtonState(isEnabled: false)
         activityIndicator.startAnimating()
     }
     
     func hideLoadingIndicator() {
-        changeStateButton(isEnabled: true)
+        changeButtonState(isEnabled: true)
         activityIndicator.stopAnimating()
     }
 }

@@ -4,7 +4,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
     
     // MARK: - Internal Properties
     
-    weak var delegate: QuestionFactoryDelegate?
+    weak var delegate: MovieQuizPresenter?
     
     // MARK: - Private Properties
     
@@ -15,7 +15,7 @@ final class QuestionFactory : QuestionFactoryProtocol {
     
     // MARK: - Initializers
     
-    init(moviesLoader: MoviesLoadingProtocol, delegate: QuestionFactoryDelegate?) {
+    init(moviesLoader: MoviesLoadingProtocol, delegate: MovieQuizPresenter?) {
         self.moviesLoader = moviesLoader
         self.delegate = delegate
     }

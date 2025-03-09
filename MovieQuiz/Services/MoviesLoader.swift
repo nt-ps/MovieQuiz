@@ -2,9 +2,9 @@ import Foundation
 
 struct MoviesLoader: MoviesLoadingProtocol {
     
-    // MARK: - NetworkClient
+    // MARK: - Network Client
     
-    private let networkClient = NetworkClient()
+    private let networkClient: NetworkRoutingProtocol
         
     // MARK: - URL
     
@@ -15,7 +15,13 @@ struct MoviesLoader: MoviesLoadingProtocol {
         return url
     }
     
-    // MARK: - Internal methods
+    // MARK: - Initializers
+    
+    init(networkClient: NetworkRoutingProtocol = NetworkClient()) {
+        self.networkClient = networkClient
+    }
+    
+    // MARK: - Internal Methods
     
     func loadMovies(handler: @escaping (Result<Top250Movies, Error>) -> Void) {
         networkClient.fetch(url: top250MoviesUrl) { result in

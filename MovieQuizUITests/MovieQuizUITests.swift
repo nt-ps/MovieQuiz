@@ -20,6 +20,8 @@ final class MovieQuizUITests: XCTestCase {
         app = nil
     }
     
+    // MARK: - Button Tests
+    
     func testYesButton() {
         sleep(3)
         
@@ -55,6 +57,8 @@ final class MovieQuizUITests: XCTestCase {
         XCTAssertNotEqual(firstPosterData, secondPosterData)
         XCTAssertEqual(numberLabel.label, "2/10")
     }
+    
+    // MARK: - Alert Tests
     
     func testAlert() {
         sleep(2)

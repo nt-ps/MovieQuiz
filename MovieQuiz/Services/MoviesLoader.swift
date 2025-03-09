@@ -2,7 +2,7 @@ import Foundation
 
 struct MoviesLoader: MoviesLoadingProtocol {
     
-    // MARK: - NetworkClient
+    // MARK: - Network Client
     
     private let networkClient: NetworkRoutingProtocol
         
@@ -21,7 +21,7 @@ struct MoviesLoader: MoviesLoadingProtocol {
         self.networkClient = networkClient
     }
     
-    // MARK: - Internal methods
+    // MARK: - Internal Methods
     
     func loadMovies(handler: @escaping (Result<Top250Movies, Error>) -> Void) {
         networkClient.fetch(url: top250MoviesUrl) { result in

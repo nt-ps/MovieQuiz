@@ -1,11 +1,11 @@
 protocol QuestionFactoryDelegate: AnyObject {
     
-    // MARK: - Loading data
+    // MARK: - Loading Data
     
     func didLoadDataFromServer()
     func didFailToLoadData(with error: Error)
     
-    // MARK: - Loading question
+    // MARK: - Loading Question
     
     func didReceiveNextQuestion(question: QuizQuestion?)
     func didFailToLoadQuestion(with error: Error)
